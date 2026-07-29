@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+/* Brand palette — cream (#fff8f1), peach (#fce9d2), apricot (#f6ce8e), crimson (#e31e3b) */
+@theme {
+  --color-brand-50: #fff8f1;
+  --color-brand-100: #fce9d2;
+  --color-brand-300: #f6ce8e;
+  --color-brand-600: #e31e3b;
+  --color-brand-700: #b8142e;
+  --color-brand-800: #2b1014;
+}
+
+/*
+  Fraunces = display/headline serif (premium, editorial). Inter = body/UI sans.
+  Kept as plain custom properties (not @theme --font-* tokens) so they don't
+  collide with Tailwind v4's auto-generated font-display/font-sans utilities —
+  .font-display below is hand-rolled to also tighten letter-spacing.
+*/
+:root {
+  color-scheme: light;
+  --katy-font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --katy-font-sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: var(--katy-font-sans);
+  color: var(--color-brand-800);
+  background: var(--color-brand-50);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--katy-font-display);
+  letter-spacing: -0.02em;
+}
+
+/*
+  Neumorphism: soft "extruded from the same material" surfaces built from a
+  dual box-shadow (a light highlight + a dark ink-tinted shadow) instead of
+  borders or a contrasting surface color. The illusion only reads correctly
+  when a surface's own background matches the page background (see `body`
+  above, and why every `.clay*` element pairs with bg-brand-50, not bg-white)
+  — that's the opposite of claymorphism's old two-tone (white card / colored
+  page) approach this replaced, so don't reintroduce a contrasting card color.
+  Class names kept as `.clay*` rather than renamed to `.neu*` so every
+  component that already reaches for them (see below) didn't need touching.
+  `.clay` = resting/raised surface (cards, panels, images). `.clay-btn` =
+  interactive raised surface with hover/active press states. `.clay-field` =
+  recessed/pressed surface (inputs, selects, textareas — reads as "pushed
+  into" the page).
+*/
+@layer utilities {
+  .clay {
+    border: none;
+    box-shadow:
+      -10px -10px 20px rgba(255, 255, 255, 0.85),
+      10px 10px 22px rgba(43, 16, 20, 0.18);
+  }
+
+  .clay-sm {
+    border: none;
+    box-shadow:
+      -6px -6px 12px rgba(255, 255, 255, 0.8),
+      6px 6px 14px rgba(43, 16, 20, 0.16);
+  }
+
+  .clay-btn {
+    border: none;
+    box-shadow:
+      -6px -6px 14px rgba(255, 255, 255, 0.6),
+      6px 6px 16px rgba(43, 16, 20, 0.28);
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+  }
+  .clay-btn:hover {
+    box-shadow:
+      -4px -4px 10px rgba(255, 255, 255, 0.6),
+      4px 4px 12px rgba(43, 16, 20, 0.32);
+  }
+  .clay-btn:active {
+    box-shadow:
+      inset -6px -6px 12px rgba(255, 255, 255, 0.35),
+      inset 6px 6px 14px rgba(43, 16, 20, 0.38);
+    transform: translateY(1px);
+  }
+  .clay-btn:disabled {
+    box-shadow:
+      -3px -3px 8px rgba(255, 255, 255, 0.4),
+      3px 3px 10px rgba(43, 16, 20, 0.16);
+  }
+
+  .clay-field {
+    border: none;
+    background-color: var(--color-brand-50);
+    box-shadow:
+      inset -5px -5px 10px rgba(255, 255, 255, 0.7),
+      inset 5px 5px 12px rgba(43, 16, 20, 0.16);
+  }
+  .clay-field:focus {
+    outline: none;
+    box-shadow:
+      inset -4px -4px 8px rgba(255, 255, 255, 0.6),
+      inset 4px 4px 10px rgba(43, 16, 20, 0.2),
+      0 0 0 3px rgba(227, 30, 59, 0.25);
+  }
+}
