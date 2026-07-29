@@ -18,7 +18,7 @@ CREATE TYPE property_status AS ENUM (
 );
 
 CREATE TYPE rental_term AS ENUM (
-  'short_term', 'long_term'
+  'short_term', 'long_term', 'flexible'
 );
 
 CREATE TYPE payment_method AS ENUM (

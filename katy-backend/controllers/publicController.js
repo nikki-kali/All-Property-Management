@@ -6,7 +6,10 @@ exports.getPublishedProperties = async (req, res) => {
   const { rental_term, status } = req.query;
   const conditions = ['is_published = true'];
   const values = [];
-  if (rental_term) { values.push(rental_term); conditions.push(`rental_term = $${values.length}`); }
+  // 'flexible' properties can go either way, so they satisfy both the
+  // long_term and short_term tabs on the public Rentals page rather than
+  // needing a rental_term value that picks one over the other.
+  if (rental_term) { values.push(rental_term); conditions.push(`rental_term IN ($${values.length}, 'flexible')`); }
   if (status) { values.push(status); conditions.push(`status = $${values.length}`); }
 
   try {
