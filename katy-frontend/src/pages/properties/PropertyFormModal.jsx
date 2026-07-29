@@ -6,6 +6,7 @@ import { ErrorMessage } from '../../components/Loading';
 export default function PropertyFormModal({ onClose, onSaved }) {
   const [form, setForm] = useState({
     title: '', address: '', property_type: '', size_sqm: '', rental_term: '', rate: '', description: '',
+    amenities: '', max_occupancy: '',
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -24,6 +25,10 @@ export default function PropertyFormModal({ onClose, onSaved }) {
         size_sqm: form.size_sqm ? Number(form.size_sqm) : null,
         rate: form.rate ? Number(form.rate) : null,
         rental_term: form.rental_term || null,
+        max_occupancy: form.max_occupancy ? Number(form.max_occupancy) : null,
+        amenities: form.amenities
+          ? form.amenities.split(',').map((a) => a.trim()).filter(Boolean)
+          : [],
       });
       onSaved();
     } catch (err) {
@@ -53,10 +58,17 @@ export default function PropertyFormModal({ onClose, onSaved }) {
             <option value="">Not a rental</option>
             <option value="short_term">Short term</option>
             <option value="long_term">Long term</option>
+            <option value="flexible">Flexible (either term)</option>
           </select>
           <input placeholder="Rate" type="number" value={form.rate} onChange={(e) => update('rate', e.target.value)}
             className="clay-field rounded-xl px-3 py-2 text-sm" />
         </div>
+        <input placeholder="Sleeps how many? (e.g. 4)" type="number" min="1" value={form.max_occupancy}
+          onChange={(e) => update('max_occupancy', e.target.value)}
+          className="w-full clay-field rounded-xl px-3 py-2 text-sm" />
+        <input placeholder="Amenities, comma separated (e.g. Wifi, Air Conditioning, Parking)" value={form.amenities}
+          onChange={(e) => update('amenities', e.target.value)}
+          className="w-full clay-field rounded-xl px-3 py-2 text-sm" />
         <textarea placeholder="Description" value={form.description} onChange={(e) => update('description', e.target.value)}
           className="w-full clay-field rounded-xl px-3 py-2 text-sm" rows={3} />
 

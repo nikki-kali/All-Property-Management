@@ -38,12 +38,13 @@ exports.getPropertyById = async (req, res) => {
 };
 
 exports.createProperty = async (req, res) => {
-  const { title, address, property_type, size_sqm, rental_term, rate, description } = req.body;
+  const { title, address, property_type, size_sqm, rental_term, rate, description, amenities, max_occupancy } = req.body;
   try {
     const { rows } = await pool.query(
-      `INSERT INTO properties (title, address, property_type, size_sqm, rental_term, rate, description)
-       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
-      [title, address, property_type, size_sqm, rental_term || null, rate, description]
+      `INSERT INTO properties (title, address, property_type, size_sqm, rental_term, rate, description, amenities, max_occupancy)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+      [title, address, property_type, size_sqm, rental_term || null, rate, description,
+       JSON.stringify(Array.isArray(amenities) ? amenities : []), max_occupancy || null]
     );
     res.status(201).json(rows[0]);
   } catch (err) {
@@ -52,11 +53,15 @@ exports.createProperty = async (req, res) => {
 };
 
 exports.updateProperty = async (req, res) => {
-  const fields = ['title','address','property_type','size_sqm','status','rental_term','rate','is_published','description'];
+  const fields = ['title','address','property_type','size_sqm','status','rental_term','rate','is_published','description','amenities','max_occupancy'];
   const updates = [];
   const values = [];
   fields.forEach((f) => {
-    if (req.body[f] !== undefined) { values.push(req.body[f]); updates.push(`${f} = $${values.length}`); }
+    if (req.body[f] !== undefined) {
+      const value = f === 'amenities' ? JSON.stringify(Array.isArray(req.body[f]) ? req.body[f] : []) : req.body[f];
+      values.push(value);
+      updates.push(`${f} = $${values.length}`);
+    }
   });
   if (!updates.length) return res.status(400).json({ error: 'No fields to update' });
   values.push(req.params.id);

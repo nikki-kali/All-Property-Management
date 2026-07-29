@@ -14,13 +14,29 @@ exports.getPublishedProperties = async (req, res) => {
 
   try {
     const { rows } = await pool.query(
-      `SELECT id, title, address, property_type, size_sqm, status, rental_term, rate, description,
+      `SELECT id, title, address, property_type, size_sqm, status, rental_term, rate, description, amenities, max_occupancy,
          (SELECT url FROM property_photos WHERE property_id = properties.id ORDER BY sort_order LIMIT 1) AS photo_url
        FROM properties
        WHERE ${conditions.join(' AND ')}
        ORDER BY created_at DESC`,
       values
     );
+
+    // Full photo galleries for the listing-detail modal, fetched separately (rather than a
+    // JOIN or json_agg) so it works unchanged against both Postgres and the SQLite fallback —
+    // same reasoning as the photo_url subquery above avoiding a row-multiplying JOIN.
+    if (rows.length) {
+      const ids = rows.map((r) => r.id);
+      const placeholders = ids.map((_, i) => `$${i + 1}`).join(',');
+      const { rows: photos } = await pool.query(
+        `SELECT property_id, url FROM property_photos WHERE property_id IN (${placeholders}) ORDER BY sort_order`,
+        ids
+      );
+      const photosByProperty = {};
+      photos.forEach((p) => { (photosByProperty[p.property_id] ||= []).push(p.url); });
+      rows.forEach((r) => { r.photos = photosByProperty[r.id] || []; });
+    }
+
     res.json(rows);
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -1,9 +1,15 @@
 import { Building2 } from 'lucide-react';
 import { formatCurrency, formatLabel } from '../../lib/format';
 
-export default function PropertyCard({ property }) {
+export default function PropertyCard({ property, onClick }) {
   return (
-    <div className="group overflow-hidden clay rounded-[1.75rem] bg-brand-50 transition-transform hover:-translate-y-1">
+    <div
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick(); } : undefined}
+      className={`group overflow-hidden clay rounded-[1.75rem] bg-brand-50 transition-transform hover:-translate-y-1 ${onClick ? 'cursor-pointer' : ''}`}
+    >
       <div className="flex aspect-[4/3] items-center justify-center overflow-hidden bg-gradient-to-br from-brand-100 via-brand-50 to-white">
         {property.photo_url ? (
           <img

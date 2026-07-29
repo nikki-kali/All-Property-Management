@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { useApi } from '../../lib/useApi';
@@ -27,6 +27,9 @@ export default function PropertyDetail() {
   const [actionError, setActionError] = useState(null);
   const [photoUrl, setPhotoUrl] = useState('');
   const [savingPhoto, setSavingPhoto] = useState(false);
+  const [occupancy, setOccupancy] = useState('');
+  const [amenitiesInput, setAmenitiesInput] = useState('');
+  const [savingDetails, setSavingDetails] = useState(false);
 
   async function handleStatusChange(e) {
     setActionError(null);
@@ -45,6 +48,29 @@ export default function PropertyDetail() {
       reload();
     } catch (err) {
       setActionError(err.message);
+    }
+  }
+
+  useEffect(() => {
+    if (!property) return;
+    setOccupancy(property.max_occupancy ?? '');
+    setAmenitiesInput((property.amenities || []).join(', '));
+  }, [property]);
+
+  async function handleSaveDetails(e) {
+    e.preventDefault();
+    setSavingDetails(true);
+    setActionError(null);
+    try {
+      await api.updateProperty(id, {
+        max_occupancy: occupancy ? Number(occupancy) : null,
+        amenities: amenitiesInput ? amenitiesInput.split(',').map((a) => a.trim()).filter(Boolean) : [],
+      });
+      reload();
+    } catch (err) {
+      setActionError(err.message);
+    } finally {
+      setSavingDetails(false);
     }
   }
 
@@ -144,6 +170,40 @@ export default function PropertyDetail() {
               <img key={photo.id} src={photo.url} alt="" className="h-24 w-full rounded-lg object-cover" />
             ))}
           </div>
+        </div>
+
+        <div className="clay rounded-3xl bg-brand-50 p-5 md:col-span-3">
+          <h2 className="mb-4 font-semibold text-gray-900">Guest Capacity &amp; Amenities</h2>
+          <p className="mb-4 text-sm text-gray-500">
+            Shown on the public listing's photo gallery popup (Rentals and Buy &amp; Sell pages).
+          </p>
+          <form onSubmit={handleSaveDetails} className="grid grid-cols-1 gap-3 sm:grid-cols-[160px_1fr_auto] sm:items-end">
+            <div>
+              <label className="mb-1 block text-xs uppercase tracking-wide text-gray-400">Sleeps how many?</label>
+              <input
+                type="number" min="1" value={occupancy}
+                onChange={(e) => setOccupancy(e.target.value)}
+                placeholder="e.g. 4"
+                className="w-full clay-field rounded-xl px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs uppercase tracking-wide text-gray-400">Amenities (comma separated)</label>
+              <input
+                value={amenitiesInput}
+                onChange={(e) => setAmenitiesInput(e.target.value)}
+                placeholder="Wifi, Air Conditioning, Parking, Pool"
+                className="w-full clay-field rounded-xl px-3 py-2 text-sm"
+              />
+            </div>
+            <button
+              type="submit"
+              disabled={savingDetails}
+              className="clay-btn rounded-2xl bg-brand-600 px-4 py-2 text-sm font-medium text-white hover:bg-brand-700 disabled:opacity-50"
+            >
+              {savingDetails ? 'Saving…' : 'Save'}
+            </button>
+          </form>
         </div>
 
         <div className="md:col-span-3">

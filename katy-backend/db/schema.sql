@@ -81,6 +81,10 @@ CREATE TABLE properties (
   rate            NUMERIC,              -- monthly rate or sale price depending on context
   is_published    BOOLEAN NOT NULL DEFAULT false,  -- syncs to public site
   description     TEXT,
+  amenities       JSONB DEFAULT '[]',   -- ["Wifi","Air Conditioning",...] — JSONB (not TEXT[]) so writes
+                                         -- can always go through JSON.stringify() the same way
+                                         -- titling_jobs.checklist does, working unchanged on the SQLite fallback
+  max_occupancy   INT,                  -- guest/resident capacity, shown as "Sleeps N" on the public listing modal
   created_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at      TIMESTAMPTZ NOT NULL DEFAULT now()
 );

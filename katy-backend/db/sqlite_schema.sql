@@ -42,6 +42,8 @@ CREATE TABLE IF NOT EXISTS properties (
   rate            REAL,                 -- monthly rate or sale price depending on context
   is_published    INTEGER NOT NULL DEFAULT 0,  -- syncs to public site
   description     TEXT,
+  amenities       TEXT DEFAULT '[]',    -- JSON array text, auto-parsed back to an array on read (autoParseJSON)
+  max_occupancy   INTEGER,
   created_at      TEXT NOT NULL DEFAULT (now()),
   updated_at      TEXT NOT NULL DEFAULT (now())
 );
