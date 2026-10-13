@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "ga4-auth-setup": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/.curated/ga4-auth-setup/SKILL.md",
+      "computedHash": "27d6d076124fd71fe50a4c3a3995dee1b8beb4f2663c3c2ed0f7a84ce274c874"
+    },
+    "ga4-data-api-query": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/.curated/ga4-data-api-query/SKILL.md",
+      "computedHash": "9835316d59ee9f8656b7ed23e0d442e90f893cd87c20d0e85cd307480d2ce2aa"
+    },
+    "ga4-realtime-api": {
+      "source": "jeremylongshore/claude-code-plugins-plus-skills",
+      "sourceType": "github",
+      "skillPath": "skills/.curated/ga4-realtime-api/SKILL.md",
+      "computedHash": "9a8603ba9da98e21f6b0c2e7c974a816085cba6bb48f16b5c41a0076396d4088"
+    }
+  }
+}
